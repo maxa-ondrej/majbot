@@ -22,9 +22,11 @@ import cz.majksa.majbot.core.Server;
 import cz.majksa.majbot.core.ServerImpl;
 import cz.majksa.majbot.exceptions.AlreadyActivatedException;
 import cz.majksa.majbot.exceptions.NotActivatedException;
+import cz.majksa.majbot.logging.Logger;
 import lombok.NonNull;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +39,10 @@ import java.util.Map;
  * @since 1.0.0
  */
 public class MajBot {
+
+    public static final String VERSION = "1.0.0";
+    public static final String JDA_VERSION = "4.3.0_293";
+    public static final Logger LOGGER = new Logger(LogManager.getLogger());
 
     private static final Map<Guild, Server> servers = new HashMap<>();
 
