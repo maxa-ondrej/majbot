@@ -1,0 +1,47 @@
+/*
+ *  majbot - cz.majksa.majbot.logging.LoggerTest
+ *  Copyright (C) 2021  Majksa
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package cz.majksa.majbot.logging;
+
+import cz.majksa.majbot.MajBot;
+import org.apache.logging.log4j.Level;
+import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class LoggerTest {
+
+    @Test
+    void shouldCallListener() {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        MajBot.LOGGER.register(Level.ERROR, logEvent -> atomicBoolean.set(true));
+        MajBot.LOGGER.atError().log("test error");
+        assertTrue(atomicBoolean.get());
+    }
+
+    @Test
+    void shouldNotCallListener() {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        MajBot.LOGGER.register(Level.ERROR, logEvent -> atomicBoolean.set(true));
+        MajBot.LOGGER.atDebug().log("test debug");
+        assertFalse(atomicBoolean.get());
+    }
+
+}
