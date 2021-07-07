@@ -72,6 +72,11 @@ public final class MajBot {
         listeners.start();
     }
 
+    public void shutdown() {
+        listeners.shutdown();
+        bots.remove(api);
+    }
+
     public Server getServer(@NonNull Guild guild) {
         if (!servers.containsKey(guild)) {
             servers.put(guild, new ServerImpl(guild));
