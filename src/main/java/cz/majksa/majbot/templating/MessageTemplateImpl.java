@@ -19,8 +19,10 @@
 package cz.majksa.majbot.templating;
 
 import lombok.Getter;
+import lombok.NonNull;
 import net.dv8tion.jda.api.EmbedBuilder;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,8 +36,26 @@ import java.util.List;
 @Getter
 public class MessageTemplateImpl implements MessageTemplate {
 
-    private final List<EmbedBuilder> embedBuilders = new LinkedList<>();
-    private final EmbedBuilder defaultEmbedBuilder = new EmbedBuilder();
-    private final StringBuilder contentBuilder = new StringBuilder();
+    private final @NonNull List<EmbedBuilder> embedBuilders;
+    private final @NonNull EmbedBuilder defaultEmbedBuilder;
+    private final @NonNull StringBuilder contentBuilder;
+
+    public MessageTemplateImpl() {
+        this(new EmbedBuilder());
+    }
+
+    public MessageTemplateImpl(@NonNull EmbedBuilder defaultEmbedBuilder) {
+        this(new ArrayList<>(), defaultEmbedBuilder, new StringBuilder());
+    }
+
+    public MessageTemplateImpl(@NonNull MessageTemplate template) {
+        this(template.getEmbedBuilders(), template.getDefaultEmbedBuilder(), template.getContentBuilder());
+    }
+
+    public MessageTemplateImpl(@NonNull List<EmbedBuilder> embedBuilders, @NonNull EmbedBuilder defaultEmbedBuilder, @NonNull StringBuilder contentBuilder) {
+        this.embedBuilders = embedBuilders;
+        this.defaultEmbedBuilder = defaultEmbedBuilder;
+        this.contentBuilder = contentBuilder;
+    }
 
 }
