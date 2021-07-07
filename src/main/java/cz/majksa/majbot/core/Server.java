@@ -18,8 +18,13 @@
 
 package cz.majksa.majbot.core;
 
+import cz.majksa.majbot.listeners.EntryPoint;
 import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * <p><b>Interface {@link cz.majksa.majbot.core.Server}</b></p>
@@ -31,5 +36,7 @@ import net.dv8tion.jda.api.entities.Guild;
 public interface Server {
 
     @NonNull Guild getGuild();
+
+    @NonNull <T extends GenericGuildEvent> EntryPoint<T> listen(@NonNull Class<T> clazz, @NonNull Consumer<T> callback, @NonNull Predicate<T> predicate);
 
 }

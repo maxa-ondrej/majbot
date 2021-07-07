@@ -234,13 +234,13 @@ public class Listeners  extends ListenerAdapter {
      */
     @Getter
     private final Map<Class<? extends GenericEvent>, EntryPointList<? extends GenericEvent>> entryPointsMap = new HashMap<>();
-    private final JDA jda;
+    private final @NonNull JDA jda;
     private final @NonNull MajBot majBot;
-    private final Logger logger;
+    private final @NonNull Logger logger;
 
     private boolean running = false;
 
-    public Listeners(JDA jda) {
+    public Listeners(@NonNull JDA jda) {
         this.jda = jda;
         majBot = MajBot.get(jda);
         logger = majBot.getLogger();
@@ -280,7 +280,7 @@ public class Listeners  extends ListenerAdapter {
      * @return the {@link cz.majksa.majbot.listeners.EntryPointList} corresponding to the given class
      */
     @SuppressWarnings("unchecked")
-    public <T extends GenericEvent> EntryPointList<T> get(Class<T> clazz) {
+    public <T extends GenericEvent> @NonNull EntryPointList<T> get(@NonNull Class<T> clazz) {
         entryPointsMap.putIfAbsent(clazz, new EntryPointList<>(majBot));
         return (EntryPointList<T>) entryPointsMap.get(clazz);
     }

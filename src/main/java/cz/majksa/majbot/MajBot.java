@@ -79,7 +79,7 @@ public final class MajBot {
 
     public Server getServer(@NonNull Guild guild) {
         if (!servers.containsKey(guild)) {
-            servers.put(guild, new ServerImpl(guild));
+            servers.put(guild, new ServerImpl(this, guild));
         }
         return servers.get(guild);
     }

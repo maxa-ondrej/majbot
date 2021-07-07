@@ -49,11 +49,11 @@ public class EntryPointList<T extends GenericEvent> {
         logger = majBot.getLogger();
     }
 
-    public EntryPoint<T> register(Class<T> clazz, Consumer<T> callback, Predicate<T> predicate) {
+    public @NonNull EntryPoint<T> register(@NonNull Class<T> clazz, @NonNull Consumer<T> callback, @NonNull Predicate<T> predicate) {
         return register(new EntryPoint<>(clazz, callback, predicate, this));
     }
 
-    public EntryPoint<T> register(EntryPoint<T> entryPoint) {
+    public @NonNull EntryPoint<T> register(@NonNull EntryPoint<T> entryPoint) {
         entryPoints.add(entryPoint);
         logger
                 .atDebug()
@@ -61,14 +61,14 @@ public class EntryPointList<T extends GenericEvent> {
         return entryPoint;
     }
 
-    public void unregister(EntryPoint<T> entryPoint) {
+    public void unregister(@NonNull EntryPoint<T> entryPoint) {
         logger
                 .atDebug()
                 .log("Unregistering listener: {}", entryPoint.getType().toString());
         entryPoints.remove(entryPoint);
     }
 
-    public void run(T event) {
+    public void run(@NonNull T event) {
         logger
                 .atDebug()
                 .log("Running: {}", event.toString());

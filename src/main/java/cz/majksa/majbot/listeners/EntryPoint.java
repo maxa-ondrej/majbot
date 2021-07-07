@@ -19,6 +19,7 @@
 package cz.majksa.majbot.listeners;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.GenericEvent;
 
@@ -39,19 +40,19 @@ public class EntryPoint<T extends GenericEvent> {
     /**
      * The {@link Class} of the event
      */
-    private final Class<T> type;
+    private final @NonNull Class<T> type;
     /**
      * The {@link java.util.function.Consumer} for the listener
      */
-    private final Consumer<T> callback;
+    private final @NonNull Consumer<T> callback;
     /**
      * The {@link java.util.function.Predicate} for the listener
      */
-    private final Predicate<T> filter;
+    private final @NonNull Predicate<T> filter;
     /**
      * The {@link cz.majksa.majbot.listeners.EntryPointList} to {@link #register()} in and {@link #unregister()} from.
      */
-    private final EntryPointList<T> list;
+    private final @NonNull EntryPointList<T> list;
 
     /**
      * Register the listener in {@link #list}.

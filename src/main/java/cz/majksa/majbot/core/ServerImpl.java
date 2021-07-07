@@ -18,9 +18,16 @@
 
 package cz.majksa.majbot.core;
 
+import cz.majksa.majbot.MajBot;
+import cz.majksa.majbot.listeners.EntryPoint;
+import cz.majksa.majbot.listeners.Listeners;
 import lombok.Getter;
 import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * <p><b>Class {@link cz.majksa.majbot.core.ServerImpl}</b></p>
@@ -32,10 +39,20 @@ import net.dv8tion.jda.api.entities.Guild;
 @Getter
 public class ServerImpl implements Server {
 
-    private final Guild guild;
+    private final @NonNull Guild guild;
+    private final @NonNull Listeners listeners;
 
-    public ServerImpl(@NonNull Guild guild) {
+    public ServerImpl(@NonNull MajBot majBot, @NonNull Guild guild) {
         this.guild = guild;
+        listeners = majBot.getListeners();
+    }
+
+    @Override
+    public @NonNull <T extends GenericGuildEvent> EntryPoint<T> listen(@NonNull Class<T> clazz, @NonNull Consumer<T> callback, @NonNull Predicate<T> predicate) {
+        final Predicate<T> predicate2 = event -> guild.equals(event.getGuild());
+        return listeners
+                .get(clazz)
+                .register(clazz, callback, predicate2.and(predicate));
     }
 
 }

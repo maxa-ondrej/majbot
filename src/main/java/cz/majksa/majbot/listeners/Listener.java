@@ -38,9 +38,9 @@ import java.lang.annotation.Target;
 public @interface Listener {
 
     /**
-     * {@link GenericEvent} getter
+     * {@link net.dv8tion.jda.api.events.GenericEvent} getter
      *
-     * @return the {@link GenericEvent} to listen to
+     * @return the {@link net.dv8tion.jda.api.events.GenericEvent} to listen to
      */
     @NonNull
     Class<? extends GenericEvent> value();
