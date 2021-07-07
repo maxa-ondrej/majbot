@@ -288,7 +288,7 @@ public class DiscordUtils {
         if (matcher.find()) {
             return Long.parseLong(matcher.group(1));
         }
-        throw new NumberFormatException(string + " is not a valid id or a valid mention.");
+        throw new NumberFormatException(escapeString("**%s** is not a valid id or a valid mention.", string));
     }
 
     /**
@@ -303,7 +303,7 @@ public class DiscordUtils {
         if (matcher.find()) {
             return new AbstractMap.SimpleEntry<>(matcher.group(1), matcher.group(2));
         }
-        throw new NumberFormatException(string + " is not a valid tag.");
+        throw new NumberFormatException(escapeString("**%s**  is not a valid tag.", string));
     }
 
     public static @NotNull Member getMember(Guild guild, String query) {
@@ -316,7 +316,7 @@ public class DiscordUtils {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
-        throw new IllegalArgumentException(String.format("Member was not found by the specified query: **%s**!", escapeString(query)));
+        throw new IllegalArgumentException(escapeString("Member was not found by the specified query: **%s**!", query));
     }
 
     public static @NotNull TextChannel getTextChannel(Guild guild, String query) {
@@ -329,7 +329,7 @@ public class DiscordUtils {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
-        throw new IllegalArgumentException(String.format("Text Channel was not found by the specified query: **%s**!", escapeString(query)));
+        throw new IllegalArgumentException(escapeString("Text Channel was not found by the specified query: **%s**!", query));
     }
 
     public static @NotNull Role getRole(Guild guild, String query) {
@@ -345,7 +345,7 @@ public class DiscordUtils {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
-        throw new IllegalArgumentException(String.format("Role was not found by the specified query: **%s**!", escapeString(query)));
+        throw new IllegalArgumentException(escapeString("Role was not found by the specified query: **%s**!", query));
     }
 
     public static @NotNull Emote getEmote(JDA jda, String query) {
@@ -368,7 +368,7 @@ public class DiscordUtils {
                 }
             }
         }
-        throw new IllegalArgumentException(String.format("Emote was not found by the specified query: **%s**!", escapeString(query)));
+        throw new IllegalArgumentException(escapeString("Emote was not found by the specified query: **%s**!", query));
     }
 
 
