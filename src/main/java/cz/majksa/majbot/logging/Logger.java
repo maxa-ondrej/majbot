@@ -48,8 +48,12 @@ public class Logger {
     private final org.apache.logging.log4j.Logger logger;
     private final Map<Level, List<Consumer<LogEvent>>> listeners = new HashMap<>();
 
-    public void register(Level level, Consumer<LogEvent> consumer) {
+    public void listen(Level level, Consumer<LogEvent> consumer) {
         getListeners(level).add(consumer);
+    }
+
+    public void remove(Level level, Consumer<LogEvent> consumer) {
+        getListeners(level).remove(consumer);
     }
 
     public List<Consumer<LogEvent>> getListeners(Level level) {
