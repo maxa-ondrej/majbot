@@ -18,8 +18,8 @@
 
 package cz.majksa.majbot.logging;
 
-import cz.majksa.majbot.MajBot;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,19 +28,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LoggerTest {
 
+    public static final Logger LOGGER = new Logger(LogManager.getLogger());
+
     @Test
     void shouldCallListener() {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        MajBot.LOGGER.register(Level.ERROR, logEvent -> atomicBoolean.set(true));
-        MajBot.LOGGER.atError().log("test error");
+        LOGGER.listen(Level.ERROR, logEvent -> atomicBoolean.set(true));
+        LOGGER.atError().log("test error");
         assertTrue(atomicBoolean.get());
     }
 
     @Test
     void shouldNotCallListener() {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        MajBot.LOGGER.register(Level.ERROR, logEvent -> atomicBoolean.set(true));
-        MajBot.LOGGER.atDebug().log("test debug");
+        LOGGER.listen(Level.ERROR, logEvent -> atomicBoolean.set(true));
+        LOGGER.atDebug().log("test debug");
         assertFalse(atomicBoolean.get());
     }
 

@@ -20,9 +20,9 @@ package cz.majksa.majbot;
 
 import cz.majksa.majbot.core.Server;
 import cz.majksa.majbot.core.ServerImpl;
-import cz.majksa.majbot.exceptions.AlreadyActivatedException;
-import cz.majksa.majbot.exceptions.NotActivatedException;
+import cz.majksa.majbot.listeners.Listeners;
 import cz.majksa.majbot.logging.Logger;
+import lombok.Getter;
 import lombok.NonNull;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -38,41 +38,41 @@ import java.util.Map;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class MajBot {
+
+public final class MajBot {
 
     public static final String VERSION = "1.0.0";
     public static final String JDA_VERSION = "4.3.0_293";
-    public static final Logger LOGGER = new Logger(LogManager.getLogger());
 
-    private static final Map<Guild, Server> servers = new HashMap<>();
+    private static final Map<JDA, MajBot> bots = new HashMap<>();
 
-    private static JDA api = null;
+    @Getter
+    private final Logger logger = new Logger(LogManager.getLogger());
+    private final Map<Guild, Server> servers = new HashMap<>();
+    private final JDA api;
+    @Getter
+    private final Listeners listeners;
 
-    public static boolean isActivated() {
-        return api != null;
+    private MajBot(JDA api) {
+        this.api = api;
+        listeners = new Listeners(api);
     }
 
-    public static void activate(@NonNull JDA jda) {
-        if (isActivated()) {
-            throw new AlreadyActivatedException();
-        }
-        api = jda;
+    public static @NonNull MajBot get(@NonNull JDA jda) {
+        bots.computeIfAbsent(jda, MajBot::new);
+        return bots.get(jda);
+    }
+
+    public void start() {
         try {
             api.awaitReady();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        listeners.start();
     }
 
-    public static void deactivate() {
-        if (!isActivated()) {
-            throw new NotActivatedException();
-        }
-        api.shutdown();
-        api = null;
-    }
-
-    public static Server get(@NonNull Guild guild) {
+    public Server getServer(@NonNull Guild guild) {
         if (!servers.containsKey(guild)) {
             servers.put(guild, new ServerImpl(guild));
         }
