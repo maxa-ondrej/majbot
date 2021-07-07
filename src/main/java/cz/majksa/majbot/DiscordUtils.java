@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -72,20 +73,38 @@ public class DiscordUtils {
     public static final Pattern TAG_PATTERN = Pattern.compile("^(.{3,32})#([0-9]{4})$", Pattern.CASE_INSENSITIVE);
     public static final Pattern QUOTE_PATTER = Pattern.compile("^> ", Pattern.MULTILINE);
     public static final Pattern URL_PATTER = Pattern.compile("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", Pattern.CASE_INSENSITIVE);
+    public static final Pattern NAMED_LINK_PATTER = Pattern.compile("(\\[[^)]+])(\\([^]]+\\))", Pattern.CASE_INSENSITIVE);
     public static final String LINE_BREAKS_REGEX = "\r\n|\n\r|\n|\r|\u000b|\u000c|\u0085|\u2028|\u2029";
     // Regex: CR+LF || LF+CR || LF || CR || VT (Vertical Tab) || FF (Form Feed) || NEL (Next Line) || LS (Line Sep.) || PS (Paragraph Sep.)
     // Source: https://en.wikipedia.org/wiki/Newline#Unicode
-    public static final EscapingLocale DEFAULT_ESCAPING_LOCALE = new EscapingLocale(" ", "'");
+    public static final EscapingLocale DEFAULT_ESCAPING_LOCALE = new EscapingLocale("\\\\n", "'");
 
     /**
-     * Removes discord formatting from String
+     * Formats the string and removes discord formatting from args
      *
      * @param subject the {@link java.lang.String} to escape
-     * @return the escaped string
+     * @param args    arguments to be used in {@link java.lang.String#format(String, Object...)}
+     * @return the final string
      * @author majksa
      */
-    public static @NonNull String escapeString(@NonNull String subject, Object... args) {
-        return escapeString(DEFAULT_ESCAPING_LOCALE, subject, args);
+    public static @NonNull String format(@NonNull String subject, String... args) {
+        return String.format(subject, Arrays.stream(args)
+                .map(DiscordUtils::escape)
+                .toArray());
+    }
+
+    /**
+     * Formats the string and removes discord formatting from args
+     *
+     * @param subject the {@link java.lang.String} to escape
+     * @param args    arguments to be used in {@link java.lang.String#format(String, Object...)}
+     * @return the final string
+     * @author majksa
+     */
+    public static @NonNull String format(@NonNull EscapingLocale locale, @NonNull String subject, String... args) {
+        return String.format(subject, Arrays.stream(args)
+                .map(s -> escape(s, locale))
+                .toArray());
     }
 
     /**
@@ -95,15 +114,26 @@ public class DiscordUtils {
      * @return the escaped string
      * @author majksa
      */
-    public static @NonNull String escapeString(@NonNull EscapingLocale locale, @NonNull String subject, Object... args) {
+    public static @NonNull String escape(@NonNull String subject) {
+        return escape(subject, DEFAULT_ESCAPING_LOCALE);
+    }
+
+    /**
+     * Removes discord formatting from String
+     *
+     * @param subject the {@link java.lang.String} to escape
+     * @param locale the locale to be used
+     * @return the escaped string
+     * @author majksa
+     */
+    public static @NonNull String escape(@NonNull String subject, @NonNull EscapingLocale locale) {
         String escaped = subject.replaceAll("\\\\", "\\\\\\\\");
         escaped = escapeStars(escaped);
         escaped = escapeUnderscores(escaped);
         escaped = escapeQuotes(escaped);
         escaped = escapeApostrophes(escaped, locale.getApostropheReplacement());
         escaped = escapeNewLines(escaped, locale.getNewLineReplacement());
-        escaped = escapeLinks(escaped);
-        return String.format(escaped, args);
+        return escapeLinks(escaped);
     }
 
     /**
@@ -181,9 +211,12 @@ public class DiscordUtils {
      * @author Your Nightmare
      */
     public static @NonNull String escapeLinks(@NonNull String subject) {
-        return URL_PATTER
-                .matcher(subject)
-                .replaceAll("<$0>");
+        return NAMED_LINK_PATTER
+                .matcher(URL_PATTER
+                        .matcher(subject)
+                        .replaceAll("<$0>")
+                )
+                .replaceAll("$1" + EmbedBuilder.ZERO_WIDTH_SPACE + "$2");
     }
 
     /**
@@ -195,7 +228,7 @@ public class DiscordUtils {
      * @author Your Nightmare
      */
     public static @NonNull String escapeApostrophes(@NonNull String subject) {
-        return escapeApostrophes(subject, DEFAULT_ESCAPING_LOCALE.getApostropheReplacement());
+        return subject.replaceAll("`", DEFAULT_ESCAPING_LOCALE.getApostropheReplacement());
     }
 
     /**
@@ -215,7 +248,7 @@ public class DiscordUtils {
      *
      * @param subject the {@link java.lang.String} to escape
      * @return the escaped string
-     * @author Your Nightmare
+     * @author majksa
      */
     public static @NonNull String escapeNewLines(@NonNull String subject) {
         return escapeNewLines(subject, DEFAULT_ESCAPING_LOCALE.getNewLineReplacement());
@@ -234,38 +267,93 @@ public class DiscordUtils {
         return subject.replaceAll(LINE_BREAKS_REGEX, replacement);
     }
 
+    /**
+     * Makes text italic
+     *
+     * @param subject the text to format
+     * @return the formatted text
+     */
     public static @NonNull String italic(@NonNull String subject) {
         return "*" + subject + "*";
     }
 
+    /**
+     * Makes text bold
+     *
+     * @param subject the text to format
+     * @return the formatted text
+     */
     public static @NonNull String bold(@NonNull String subject) {
         return "**" + subject + "**";
     }
 
+    /**
+     * Makes text underlined
+     *
+     * @param subject the text to format
+     * @return the formatted text
+     */
     public static @NonNull String underline(@NonNull String subject) {
         return "__" + subject + "__";
     }
 
+    /**
+     * Makes text a code
+     *
+     * @param subject the text to format
+     * @return the formatted text
+     */
     public static @NonNull String code(@NonNull String subject) {
         return "`" + subject + "`";
     }
 
+    /**
+     * Makes text a codeblock
+     *
+     * @param subject the text to format
+     * @return the formatted text
+     */
     public static @NonNull String codeblock(@NonNull String subject) {
         return "```" + subject + "```";
     }
 
+    /**
+     * Makes text striked
+     *
+     * @param subject the text to format
+     * @return the formatted text
+     */
     public static @NonNull String strike(@NonNull String subject) {
         return "~~" + subject + "~~";
     }
 
+    /**
+     * Makes text a spoiler
+     *
+     * @param subject the text to format
+     * @return the formatted text
+     */
     public static @NonNull String spoiler(@NonNull String subject) {
         return "||" + subject + "||";
     }
 
+    /**
+     * Makes text a quote
+     *
+     * @param subject the text to format
+     * @return the formatted text
+     */
     public static @NonNull String quote(@NonNull String subject) {
         return "> " + subject;
     }
 
+    /**
+     * Creates a named link
+     *
+     * @param display the text to display
+     * @param url     the url the user will be taken to
+     * @return the formatted text
+     */
     public static @NonNull String link(@NonNull String display, @NonNull String url) {
         return String.format("[%s](%s)", display, url);
     }
@@ -288,7 +376,7 @@ public class DiscordUtils {
         if (matcher.find()) {
             return Long.parseLong(matcher.group(1));
         }
-        throw new NumberFormatException(escapeString("**%s** is not a valid id or a valid mention.", string));
+        throw new NumberFormatException(format("**%s** is not a valid id or a valid mention.", string));
     }
 
     /**
@@ -299,11 +387,11 @@ public class DiscordUtils {
      * @throws NumberFormatException if the provided string is not a valid id or a valid mention
      */
     public static @NotNull Map.Entry<String, String> resolveTag(@NotNull String string) throws NumberFormatException {
-        Matcher matcher = MENTION_TO_ID_PATTERN.matcher(string);
+        Matcher matcher = TAG_PATTERN.matcher(string);
         if (matcher.find()) {
             return new AbstractMap.SimpleEntry<>(matcher.group(1), matcher.group(2));
         }
-        throw new NumberFormatException(escapeString("**%s**  is not a valid tag.", string));
+        throw new NumberFormatException(format("**%s** is not a valid tag.", string));
     }
 
     public static @NotNull Member getMember(Guild guild, String query) {
@@ -316,7 +404,7 @@ public class DiscordUtils {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
-        throw new IllegalArgumentException(escapeString("Member was not found by the specified query: **%s**!", query));
+        throw new IllegalArgumentException(format("Member was not found by the specified query: **%s**!", query));
     }
 
     public static @NotNull TextChannel getTextChannel(Guild guild, String query) {
@@ -329,7 +417,7 @@ public class DiscordUtils {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
-        throw new IllegalArgumentException(escapeString("Text Channel was not found by the specified query: **%s**!", query));
+        throw new IllegalArgumentException(format("Text Channel was not found by the specified query: **%s**!", query));
     }
 
     public static @NotNull Role getRole(Guild guild, String query) {
@@ -345,7 +433,7 @@ public class DiscordUtils {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
-        throw new IllegalArgumentException(escapeString("Role was not found by the specified query: **%s**!", query));
+        throw new IllegalArgumentException(format("Role was not found by the specified query: **%s**!", query));
     }
 
     public static @NotNull Emote getEmote(JDA jda, String query) {
@@ -368,7 +456,7 @@ public class DiscordUtils {
                 }
             }
         }
-        throw new IllegalArgumentException(escapeString("Emote was not found by the specified query: **%s**!", query));
+        throw new IllegalArgumentException(format("Emote was not found by the specified query: **%s**!", query));
     }
 
 

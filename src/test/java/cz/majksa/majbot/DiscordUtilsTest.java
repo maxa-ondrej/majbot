@@ -18,9 +18,15 @@
 
 package cz.majksa.majbot;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import javax.security.auth.login.LoginException;
+
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DiscordUtilsTest {
 
@@ -53,7 +59,7 @@ class DiscordUtilsTest {
 
     @Test
     void escapeLinks() {
-        assertEquals("test <https://google.com> test", DiscordUtils.escapeLinks("test https://google.com test"));
+        assertEquals("test <https://google.com> test [named link]\u200E(test)", DiscordUtils.escapeLinks("test https://google.com test [named link](test)"));
     }
 
     @Test
@@ -63,7 +69,7 @@ class DiscordUtilsTest {
 
     @Test
     void escapeNewLines() {
-        assertEquals("test   test", DiscordUtils.escapeNewLines("test\u000b\u000c\rtest"));
+        assertEquals("test\\n\\n\\ntest", DiscordUtils.escapeNewLines("test\u000b\u000c\rtest"));
     }
 
     @Test
@@ -109,6 +115,14 @@ class DiscordUtilsTest {
     @Test
     void link() {
         assertEquals("[abc](https://www.google.com)", DiscordUtils.link("abc", "https://www.google.com"));
+    }
+
+    @Test
+    void testFormat() {
+        assertEquals(
+                "test **'hi'hi** 2 [troll link]\u200E(test) \\n '''codeblock''' ```real code block'''a```",
+                DiscordUtils.format("test **%s** %s %s %s %s ```%s```", "`hi`hi", "2", "[troll link](test)", "\n", "```codeblock```", "real code block```a")
+        );
     }
 
 }
