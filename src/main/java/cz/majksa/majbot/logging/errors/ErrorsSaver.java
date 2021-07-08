@@ -72,7 +72,7 @@ public interface ErrorsSaver {
      * Saves the throwable with the provided id
      *
      * @param throwable the throwable to be saved
-     * @param id the generated id
+     * @param id        the generated id
      */
     void save(@NonNull SerializableThrowable throwable, @NonNull String id);
 
@@ -85,6 +85,7 @@ public interface ErrorsSaver {
     default SerializableThrowable delete(@NonNull SerializableThrowable throwable) {
         return delete(get(throwable));
     }
+
     /**
      * Deletes the throwable by the id
      *

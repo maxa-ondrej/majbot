@@ -30,6 +30,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface PermissionsListener {
 
+    /**
+     * Called whenever a permission is changed
+     *
+     * @param id     the id of the changed permission
+     * @param holder the permission holder
+     * @param type   the new permission value
+     * @param old    the old permission value
+     */
     void onPermissionChanged(@NonNull String id, @NonNull PermissionHolder holder, @NonNull Permissions.Type type, @Nullable Permissions.Type old);
 
 }
