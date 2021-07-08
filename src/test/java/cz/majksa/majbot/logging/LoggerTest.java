@@ -18,6 +18,8 @@
 
 package cz.majksa.majbot.logging;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.MessageBuilder;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,9 @@ class LoggerTest {
     void shouldCallListener() {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         LOGGER.listen(Level.ERROR, logEvent -> atomicBoolean.set(true));
-        LOGGER.atError().log("test error");
+        LOGGER.atError()
+                .withLocation()
+                .log("test error");
         assertTrue(atomicBoolean.get());
     }
 
@@ -42,7 +46,9 @@ class LoggerTest {
     void shouldNotCallListener() {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         LOGGER.listen(Level.ERROR, logEvent -> atomicBoolean.set(true));
-        LOGGER.atDebug().log("test debug");
+        LOGGER.atDebug()
+                .withLocation()
+                .log("test debug");
         assertFalse(atomicBoolean.get());
     }
 

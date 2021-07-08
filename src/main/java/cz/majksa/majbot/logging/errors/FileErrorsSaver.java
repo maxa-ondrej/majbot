@@ -42,6 +42,12 @@ public class FileErrorsSaver implements ErrorsSaver {
 
     private final Map<String, SerializableThrowable> throwables = new HashMap<>();
 
+    /**
+     * The constructor
+     *
+     * @param folder the folder to save throwables in
+     * @throws NotDirectoryException if the folder is not a directory
+     */
     public FileErrorsSaver(@NonNull File folder) throws NotDirectoryException {
         this.folder = folder;
         if (!folder.isDirectory()) {
@@ -49,6 +55,9 @@ public class FileErrorsSaver implements ErrorsSaver {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void init() {
         final File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(SUFFIX));
@@ -62,11 +71,23 @@ public class FileErrorsSaver implements ErrorsSaver {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param throwable the throwable to be saved
+     * @param id        the generated id
+     */
     @Override
     public void save(@NonNull SerializableThrowable throwable, @NonNull String id) {
-        FileUtils.write(getFile(id), throwable);
+        FileUtils.write(FileUtils.create(getFile(id)), throwable);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param id the id
+     * @return the throwable
+     */
     @Override
     public @NotNull SerializableThrowable delete(@NonNull String id) {
         final SerializableThrowable throwable = throwables.remove(id);
@@ -79,11 +100,22 @@ public class FileErrorsSaver implements ErrorsSaver {
         return throwable;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return the copy of {@link #throwables} map
+     */
     @Override
     public @NonNull Map<String, SerializableThrowable> map() {
         return new HashMap<>(throwables);
     }
 
+    /**
+     * Get's the file from id
+     *
+     * @param id the id
+     * @return the file
+     */
     private @NonNull File getFile(@NonNull String id) {
         return new File(folder, id + SUFFIX);
     }

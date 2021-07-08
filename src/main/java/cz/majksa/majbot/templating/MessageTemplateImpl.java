@@ -40,18 +40,37 @@ public class MessageTemplateImpl implements MessageTemplate {
     private final @NonNull EmbedBuilder defaultEmbedBuilder;
     private final @NonNull StringBuilder contentBuilder;
 
+    /**
+     * A constructor
+     */
     public MessageTemplateImpl() {
         this(new EmbedBuilder());
     }
 
+    /**
+     *
+     * @param defaultEmbedBuilder {@link #defaultEmbedBuilder}
+     */
     public MessageTemplateImpl(@NonNull EmbedBuilder defaultEmbedBuilder) {
-        this(new ArrayList<>(), defaultEmbedBuilder, new StringBuilder());
+        this(new LinkedList<>(), defaultEmbedBuilder, new StringBuilder());
     }
 
+    /**
+     * A constructor
+     *
+     * @param template the template to copy
+     */
     public MessageTemplateImpl(@NonNull MessageTemplate template) {
         this(template.getEmbedBuilders(), template.getDefaultEmbedBuilder(), template.getContentBuilder());
     }
 
+    /**
+     * A constructor
+     *
+     * @param embedBuilders       {@link #embedBuilders}
+     * @param defaultEmbedBuilder {@link #defaultEmbedBuilder}
+     * @param contentBuilder      {@link #contentBuilder}
+     */
     public MessageTemplateImpl(@NonNull List<EmbedBuilder> embedBuilders, @NonNull EmbedBuilder defaultEmbedBuilder, @NonNull StringBuilder contentBuilder) {
         this.embedBuilders = embedBuilders;
         this.defaultEmbedBuilder = defaultEmbedBuilder;

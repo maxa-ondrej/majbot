@@ -41,37 +41,65 @@ import java.util.stream.Collectors;
  */
 public interface MessageTemplate extends Appendable {
 
+    /**
+     * Gets the embed builders
+     *
+     * @return the {@link net.dv8tion.jda.api.EmbedBuilder}s
+     */
     @NotNull List<EmbedBuilder> getEmbedBuilders();
 
+    /**
+     * Gets the default embed builder
+     *
+     * @return the default {@link net.dv8tion.jda.api.EmbedBuilder}
+     */
     @NotNull EmbedBuilder getDefaultEmbedBuilder();
 
+    /**
+     * Gets the content builder
+     *
+     * @return the content builder
+     */
     @NotNull StringBuilder getContentBuilder();
 
+    /**
+     * Create a new embed builder and add it
+     *
+     * @return the embed builder itself
+     */
     default @NotNull EmbedBuilder addEmbedBuilder() {
         EmbedBuilder builder = new EmbedBuilder(getDefaultEmbedBuilder());
         addEmbedBuilder(builder);
         return builder;
     }
 
+    /**
+     * Create a new embed builder and modify it
+     *
+     * @param consumer the consumer to modify the embed builder
+     * @return {@link cz.majksa.majbot.templating.MessageTemplate}
+     */
     default @NotNull MessageTemplate addEmbedBuilder(@NotNull Consumer<EmbedBuilder> consumer) {
         consumer.accept(addEmbedBuilder());
         return this;
     }
 
+    /**
+     * Adds the provided embed builder
+     *
+     * @param embedBuilder the embed builder to be added
+     * @return {@link cz.majksa.majbot.templating.MessageTemplate}
+     */
     default @NotNull MessageTemplate addEmbedBuilder(@NotNull EmbedBuilder embedBuilder) {
         getEmbedBuilders().add(embedBuilder);
         return this;
     }
 
     /**
-     * Buils the DefaultResponse into {@link net.dv8tion.jda.api.entities.Message Message}.
+     * Get the message builder
      *
-     * @return the built {@link net.dv8tion.jda.api.entities.Message Message}
+     * @return the message builder
      */
-    default @NotNull Message build() {
-        return getMessageBuilder().build();
-    }
-
     default @NotNull MessageBuilder getMessageBuilder() {
         final List<EmbedBuilder> embedBuilders = getEmbedBuilders();
         return new MessageBuilder()
@@ -79,29 +107,74 @@ public interface MessageTemplate extends Appendable {
                 .setEmbeds(embedBuilders.isEmpty() ? Collections.emptySet() : embedBuilders.stream().map(EmbedBuilder::build).collect(Collectors.toSet()));
     }
 
+    /**
+     * Buils the {@link cz.majksa.majbot.templating.MessageTemplate} into {@link net.dv8tion.jda.api.entities.Message Message}.
+     *
+     * @return the built {@link net.dv8tion.jda.api.entities.Message Message}
+     */
+    default @NotNull Message build() {
+        return getMessageBuilder().build();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param c the char to be added
+     * @return {@link cz.majksa.majbot.templating.MessageTemplate}
+     */
     @Override
     default @NotNull MessageTemplate append(char c) {
         getContentBuilder().append(c);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param csq The character sequence to append.  If {@code csq} is
+     *            {@code null}, then the four characters {@code "null"} are
+     *            appended to this Appendable.
+     * @return {@link cz.majksa.majbot.templating.MessageTemplate}
+     */
     @Override
     default @NotNull MessageTemplate append(CharSequence csq) {
         getContentBuilder().append(csq);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param csq   The character sequence from which a subsequence will be
+     *              appended.  If {@code csq} is {@code null}, then characters
+     *              will be appended as if {@code csq} contained the four
+     *              characters {@code "null"}.
+     * @param start The index of the first character in the subsequence
+     * @param end   The index of the character following the last character in the
+     *              subsequence
+     * @return {@link cz.majksa.majbot.templating.MessageTemplate}
+     */
     @Override
     default @NotNull MessageTemplate append(CharSequence csq, int start, int end) {
         getContentBuilder().append(csq, start, end);
         return this;
     }
 
+    /**
+     * Clears the content
+     *
+     * @return {@link cz.majksa.majbot.templating.MessageTemplate}
+     */
     default @NotNull MessageTemplate clearContent() {
         getContentBuilder().setLength(0);
         return this;
     }
 
+    /**
+     * Clears all embeds and the default embed
+     *
+     * @return {@link cz.majksa.majbot.templating.MessageTemplate}
+     */
     default @NotNull MessageTemplate clearEmbeds() {
         forEachEmbed(EmbedBuilder::clear);
         return this;
@@ -154,6 +227,11 @@ public interface MessageTemplate extends Appendable {
         return false;
     }
 
+    /**
+     * If amount of embeds in this message is valid
+     *
+     * @return true if amount of embeds in this message is valid
+     */
     default boolean isAmountOfEmbedsValid() {
         return getEmbedBuilders().size() <= 10;
     }
@@ -567,4 +645,29 @@ public interface MessageTemplate extends Appendable {
         forEachEmbed(EmbedBuilder::clearFields);
         return this;
     }
+
+    /**
+     * The {@link java.lang.StringBuilder StringBuilder} used to
+     * build the description for the embed.
+     * <br>Note: To reset the description use {@link #setDescription(CharSequence) setDescription(null)}
+     *
+     * @return StringBuilder with current description context
+     */
+    default @NotNull StringBuilder getDescriptionBuilder() {
+        return getDefaultEmbedBuilder().getDescriptionBuilder();
+    }
+
+    /**
+     * <b>Changing this list will <u>not</u> have any effect on the rest of the {@link #getEmbedBuilders()}</b>
+     * <br><b>Modifiable</b> list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} Fields that the builder will
+     * use for {@link #build()}.
+     * <br>You can add/remove Fields and restructure this {@link java.util.List List} and it will then be applied in the
+     * built MessageEmbed. These fields will be available again through {@link net.dv8tion.jda.api.entities.MessageEmbed#getFields() MessageEmbed.getFields()}
+     *
+     * @return Mutable List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Fields}
+     */
+    default @NotNull List<MessageEmbed.Field> getFields() {
+        return getDefaultEmbedBuilder().getFields();
+    }
+
 }

@@ -39,14 +39,35 @@ import java.util.function.Predicate;
 @Getter
 public class ServerImpl implements Server {
 
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Guild} object
+     */
     private final @NonNull Guild guild;
+    /**
+     * The {@link cz.majksa.majbot.listeners.Listeners}
+     */
     private final @NonNull Listeners listeners;
 
+    /**
+     * The constructor
+     *
+     * @param majBot the bot application
+     * @param guild {@link #guild}
+     */
     public ServerImpl(@NonNull MajBot majBot, @NonNull Guild guild) {
         this.guild = guild;
         listeners = majBot.getListeners();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param clazz     the event type class, has to extend {@link net.dv8tion.jda.api.events.guild.GenericGuildEvent}
+     * @param callback  the function called on event
+     * @param predicate the condition whether the callback should be executed
+     * @param <T> the event type, has to extend {@link net.dv8tion.jda.api.events.guild.GenericGuildEvent}
+     * @return the generated {@link cz.majksa.majbot.listeners.EntryPoint}
+     */
     @Override
     public @NonNull <T extends GenericGuildEvent> EntryPoint<T> listen(@NonNull Class<T> clazz, @NonNull Consumer<T> callback, @NonNull Predicate<T> predicate) {
         final Predicate<T> predicate2 = event -> guild.equals(event.getGuild());

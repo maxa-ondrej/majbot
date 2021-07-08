@@ -24,8 +24,10 @@ import lombok.SneakyThrows;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 
 /**
@@ -37,6 +39,14 @@ import java.io.Serializable;
  */
 public class FileUtils {
 
+    /**
+     * Reads a serializable file
+     *
+     * @param file  the file to be read
+     * @param clazz the serializable class
+     * @param <T>   the type of serializable
+     * @return the read serializable object
+     */
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public static  <T extends Serializable> T read(@NonNull File file, @NonNull Class<T> clazz) {
@@ -49,13 +59,54 @@ public class FileUtils {
         return object;
     }
 
+    /**
+     * Writes a serializable file
+     *
+     * @param file the file to be written
+     * @param o    the object to be written
+     * @param <T>  the type of serializable
+     */
     @SneakyThrows
-    public static  <T extends Serializable> void write(@NonNull File file, @NonNull T o) {
-        final FileOutputStream fileOutputStream = new FileOutputStream(file);
-        final ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(o);
-        objectOutputStream.close();
-        fileOutputStream.close();
+    public static <T extends Serializable> void write(@NonNull File file, @NonNull T o) {
+        try (final FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            try (final ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
+                objectOutputStream.writeObject(o);
+            }
+        }
+    }
+
+    /**
+     * Creates or truncates a file
+     *
+     * @param file the file to create
+     * @return the file itself
+     */
+    @SneakyThrows
+    public static @NonNull File create(@NonNull File file) {
+        return create(file, true);
+    }
+
+    /**
+     * Creates or truncates a file
+     *
+     * @param file     the file to create
+     * @param truncate whether the file should be created if it already exists
+     * @return the file itself
+     */
+    @SneakyThrows
+    public static @NonNull File create(@NonNull File file, boolean truncate) {
+        if (file.exists()) {
+            if (truncate) {
+                final PrintWriter writer = new PrintWriter(file);
+                writer.print("");
+                writer.close();
+            }
+        } else {
+            if (!file.createNewFile()) {
+                throw new IOException("File " + file.getAbsolutePath() + " could not have been created!");
+            }
+        }
+        return file;
     }
 
 }

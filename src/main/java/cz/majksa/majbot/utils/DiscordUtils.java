@@ -18,6 +18,7 @@
 
 package cz.majksa.majbot.utils;
 
+import cz.majksa.majbot.templating.MessageTemplate;
 import lombok.NonNull;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -69,14 +70,34 @@ public class DiscordUtils {
      * @see net.dv8tion.jda.api.entities.ISnowflake
      */
     public static final Pattern MENTION_TO_ID_PATTERN = Pattern.compile(String.format("<(?:@!?)?(?:@&?)?#?(?<!<)(\\d{%d,%d})>", SNOWFLAKE_LENGTH_MIN, SNOWFLAKE_LENGTH_MAX), Pattern.CASE_INSENSITIVE);
+    /**
+     *
+     */
     public static final Pattern EMOJI_MENTION_TO_ID_PATTERN = Pattern.compile(String.format("<:[^:]+:(\\d{%d,%d})>", SNOWFLAKE_LENGTH_MIN, SNOWFLAKE_LENGTH_MAX), Pattern.CASE_INSENSITIVE);
+    /**
+     * The pattern to match discord tags
+     */
     public static final Pattern TAG_PATTERN = Pattern.compile("^(.{3,32})#([0-9]{4})$", Pattern.CASE_INSENSITIVE);
+    /**
+     * The pattern to match discord quotes
+     */
     public static final Pattern QUOTE_PATTER = Pattern.compile("^> ", Pattern.MULTILINE);
+    /**
+     * The pattern to match urls
+     */
     public static final Pattern URL_PATTER = Pattern.compile("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", Pattern.CASE_INSENSITIVE);
+    /**
+     * The pattern to match discord named links
+     */
     public static final Pattern NAMED_LINK_PATTER = Pattern.compile("(\\[[^)]+])(\\([^]]+\\))", Pattern.CASE_INSENSITIVE);
+    /**
+     * Regex: CR+LF || LF+CR || LF || CR || VT (Vertical Tab) || FF (Form Feed) || NEL (Next Line) || LS (Line Sep.) || PS (Paragraph Sep.)
+     * Source: https://en.wikipedia.org/wiki/Newline#Unicode
+     */
     public static final String LINE_BREAKS_REGEX = "\r\n|\n\r|\n|\r|\u000b|\u000c|\u0085|\u2028|\u2029";
-    // Regex: CR+LF || LF+CR || LF || CR || VT (Vertical Tab) || FF (Form Feed) || NEL (Next Line) || LS (Line Sep.) || PS (Paragraph Sep.)
-    // Source: https://en.wikipedia.org/wiki/Newline#Unicode
+    /**
+     * The default locale to be used when formatting
+     */
     public static final EscapingLocale DEFAULT_ESCAPING_LOCALE = new EscapingLocale("\\\\n", "'");
 
     /**
@@ -122,7 +143,7 @@ public class DiscordUtils {
      * Removes discord formatting from String
      *
      * @param subject the {@link java.lang.String} to escape
-     * @param locale the locale to be used
+     * @param locale  the locale to be used
      * @return the escaped string
      * @author majksa
      */
@@ -320,7 +341,7 @@ public class DiscordUtils {
     /**
      * Makes text a codeblock
      *
-     * @param subject the text to format
+     * @param subject  the text to format
      * @param language the language of the text inside the codeblock
      * @return the formatted text
      */
@@ -405,6 +426,13 @@ public class DiscordUtils {
         throw new NumberFormatException(format("**%s** is not a valid tag.", string));
     }
 
+    /**
+     * Gets a member from the query
+     *
+     * @param guild the guild to search in
+     * @param query the query
+     * @return the member
+     */
     public static @NotNull Member getMember(Guild guild, String query) {
         try {
             final long id = resolveId(query);
@@ -418,6 +446,13 @@ public class DiscordUtils {
         throw new IllegalArgumentException(format("Member was not found by the specified query: **%s**!", query));
     }
 
+    /**
+     * Gets a text channel from the query
+     *
+     * @param guild the guild to search in
+     * @param query the query
+     * @return the text channel
+     */
     public static @NotNull TextChannel getTextChannel(Guild guild, String query) {
         try {
             final long id = resolveId(query);
@@ -431,6 +466,14 @@ public class DiscordUtils {
         throw new IllegalArgumentException(format("Text Channel was not found by the specified query: **%s**!", query));
     }
 
+
+    /**
+     * Gets a role from the query
+     *
+     * @param guild the guild to search in
+     * @param query the query
+     * @return the role
+     */
     public static @NotNull Role getRole(Guild guild, String query) {
         if (query.equals(guild.getPublicRole().getAsMention())) {
             return guild.getPublicRole();
@@ -447,6 +490,14 @@ public class DiscordUtils {
         throw new IllegalArgumentException(format("Role was not found by the specified query: **%s**!", query));
     }
 
+
+    /**
+     * Gets an emote from the query
+     *
+     * @param jda   the api to search in
+     * @param query the query
+     * @return the emote
+     */
     public static @NotNull Emote getEmote(JDA jda, String query) {
         Emote emote;
         try {
@@ -470,17 +521,65 @@ public class DiscordUtils {
         throw new IllegalArgumentException(format("Emote was not found by the specified query: **%s**!", query));
     }
 
-
-    public static void addFooter(@NotNull JDA jda, @NotNull EmbedBuilder embedBuilder) {
+    /**
+     * Adds a cool footer to an embed builder
+     *
+     * @param jda          the bot api
+     * @param embedBuilder the embed builder to add footer to
+     * @return the embed builder itself
+     */
+    public static @NotNull EmbedBuilder addFooter(@NotNull JDA jda, @NotNull EmbedBuilder embedBuilder) {
         final SelfUser bot = jda.getSelfUser();
-        embedBuilder
+        return embedBuilder
                 .setTimestamp(new Date().toInstant())
                 .setFooter(bot.getName(), bot.getAvatarUrl());
     }
 
-    public static void addPageFooter(@NotNull JDA jda, @NotNull EmbedBuilder embedBuilder, int current, int total) {
+    /**
+     * Adds a cool footer to a message template
+     *
+     * @param jda             the bot api
+     * @param messageTemplate the message template to add footer to
+     * @return the message template itself
+     */
+    public static @NonNull MessageTemplate addFooter(@NotNull JDA jda, @NotNull MessageTemplate messageTemplate) {
         final SelfUser bot = jda.getSelfUser();
-        embedBuilder
+        return messageTemplate
+                .setTimestamp(new Date().toInstant())
+                .setFooter(bot.getName(), bot.getAvatarUrl());
+    }
+
+    /**
+     * Adds a cool page footer to an embed builder
+     *
+     * @param jda          the bot api
+     * @param embedBuilder the embed builder to add footer to
+     * @param current      current page
+     * @param total        total amount of pages
+     * @return the embed builder itself
+     */
+    public static @NotNull EmbedBuilder addPageFooter(@NotNull JDA jda, @NotNull EmbedBuilder embedBuilder, int current, int total) {
+        final SelfUser bot = jda.getSelfUser();
+        return embedBuilder
+                .setFooter(
+                        String.format("%s %s Page %d/%d", bot.getName(), BULLET, current, total),
+                        bot.getAvatarUrl()
+                )
+                .setTimestamp(new Date().toInstant());
+    }
+
+    /**
+     * Adds a cool page footer to a message template
+     *
+     * @param jda             the bot api
+     * @param messageTemplate the message template to add footer to
+     * @param current         current page
+     * @param total           total amount of pages
+     * @return the embed builder itself
+     */
+    public static @NotNull MessageTemplate addPageFooter(@NotNull JDA jda, @NotNull MessageTemplate messageTemplate, int current, int total) {
+        final SelfUser bot = jda.getSelfUser();
+        return messageTemplate
                 .setFooter(
                         String.format("%s %s Page %d/%d", bot.getName(), BULLET, current, total),
                         bot.getAvatarUrl()

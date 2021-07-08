@@ -35,6 +35,11 @@ import java.util.function.Predicate;
  */
 public interface Server {
 
+    /**
+     * The discord guild object
+     *
+     * @return the {@link net.dv8tion.jda.api.entities.Guild} object
+     */
     @NonNull Guild getGuild();
 
     @NonNull <T extends GenericGuildEvent> EntryPoint<T> listen(@NonNull Class<T> clazz, @NonNull Consumer<T> callback, @NonNull Predicate<T> predicate);

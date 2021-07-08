@@ -45,14 +45,33 @@ public class EntryPointList<T extends GenericEvent> {
     private final @NonNull List<EntryPoint<T>> entryPoints = new ArrayList<>();
     private final @NonNull Logger logger;
 
+    /**
+     * The constructor
+     *
+     * @param majBot the bot application
+     */
     public EntryPointList(@NonNull MajBot majBot) {
         logger = majBot.getLogger();
     }
 
+    /**
+     * Creates a new listener
+     *
+     * @param clazz     the class of the event
+     * @param callback  the callback of the listener
+     * @param predicate the condition of the listener
+     * @return the created listener
+     */
     public @NonNull EntryPoint<T> register(@NonNull Class<T> clazz, @NonNull Consumer<T> callback, @NonNull Predicate<T> predicate) {
         return register(new EntryPoint<>(clazz, callback, predicate, this));
     }
 
+    /**
+     * Adds a new listener
+     *
+     * @param entryPoint the listener
+     * @return the listener
+     */
     public @NonNull EntryPoint<T> register(@NonNull EntryPoint<T> entryPoint) {
         entryPoints.add(entryPoint);
         logger
@@ -61,6 +80,11 @@ public class EntryPointList<T extends GenericEvent> {
         return entryPoint;
     }
 
+    /**
+     * Removes the listener
+     *
+     * @param entryPoint the listener
+     */
     public void unregister(@NonNull EntryPoint<T> entryPoint) {
         logger
                 .atDebug()
@@ -68,6 +92,11 @@ public class EntryPointList<T extends GenericEvent> {
         entryPoints.remove(entryPoint);
     }
 
+    /**
+     * Runs the event in all registered listeners
+     *
+     * @param event the event to be run
+     */
     public void run(@NonNull T event) {
         logger
                 .atDebug()

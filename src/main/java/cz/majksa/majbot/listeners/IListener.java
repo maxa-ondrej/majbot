@@ -47,6 +47,11 @@ public interface IListener<T extends GenericEvent> {
         return true;
     }
 
+    /**
+     * Gets the {@link cz.majksa.majbot.listeners.Listener} annotation
+     *
+     * @return the {@link cz.majksa.majbot.listeners.Listener} annotation
+     */
     default Listener getAnnotation() {
         return getClass().getAnnotation(Listener.class);
     }

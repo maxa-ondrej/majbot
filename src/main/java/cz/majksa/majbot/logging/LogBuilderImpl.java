@@ -36,6 +36,8 @@ import org.apache.logging.log4j.util.Supplier;
  *
  * @author majksa
  * @version 1.0.0
+ * @see org.apache.logging.log4j.internal.DefaultLogBuilder
+ * @see org.apache.logging.log4j.LogBuilder
  * @since 1.0.0
  */
 @Getter
@@ -63,6 +65,7 @@ public class LogBuilderImpl implements LogBuilder {
 
     /**
      * This method should be considered internal. It is used to reset the LogBuilder for a new log message.
+     *
      * @param level The logging level for this event.
      * @return This LogBuilder instance.
      */
@@ -75,30 +78,58 @@ public class LogBuilderImpl implements LogBuilder {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param marker The Marker to log.
+     * @return The LogBuilder.
+     */
     @Override
     public LogBuilder withMarker(Marker marker) {
         this.marker = marker;
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param throwable The Throwable to log.
+     * @return the LogBuilder.
+     */
     @Override
     public LogBuilder withThrowable(Throwable throwable) {
         this.throwable = throwable;
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return The LogBuilder.
+     */
     @Override
     public LogBuilder withLocation() {
         location = StackLocatorUtil.getStackTraceElement(2);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param location The stack trace element to include in the log event.
+     * @return The LogBuilder.
+     */
     @Override
     public LogBuilder withLocation(StackTraceElement location) {
         this.location = location;
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message The message to log.
+     */
     @Override
     public void log(Message message) {
         if (isValid()) {
@@ -106,6 +137,11 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message The message to log.
+     */
     @Override
     public void log(CharSequence message) {
         if (isValid()) {
@@ -113,6 +149,11 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message The message to log.
+     */
     @Override
     public void log(String message) {
         if (isValid()) {
@@ -120,6 +161,13 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message The message.
+     * @param params  Parameters to the message.
+     * @see org.apache.logging.log4j.util.Unbox
+     */
     @Override
     public void log(String message, Object... params) {
         if (isValid()) {
@@ -127,6 +175,12 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message The message.
+     * @param params  Parameters to the message.
+     */
     @Override
     public void log(String message, Supplier<?>... params) {
         if (isValid()) {
@@ -134,6 +188,11 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param messageSupplier The supplier of the message to log.
+     */
     @Override
     public void log(Supplier<Message> messageSupplier) {
         if (isValid()) {
@@ -141,6 +200,11 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message The message to log.
+     */
     @Override
     public void log(Object message) {
         if (isValid()) {
@@ -148,6 +212,12 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0) {
         if (isValid()) {
@@ -155,6 +225,13 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     * @param p1      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0, Object p1) {
         if (isValid()) {
@@ -162,6 +239,14 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     * @param p1      parameter to the message.
+     * @param p2      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0, Object p1, Object p2) {
         if (isValid()) {
@@ -169,6 +254,15 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     * @param p1      parameter to the message.
+     * @param p2      parameter to the message.
+     * @param p3      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0, Object p1, Object p2, Object p3) {
         if (isValid()) {
@@ -176,6 +270,16 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     * @param p1      parameter to the message.
+     * @param p2      parameter to the message.
+     * @param p3      parameter to the message.
+     * @param p4      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0, Object p1, Object p2, Object p3, Object p4) {
         if (isValid()) {
@@ -183,6 +287,17 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     * @param p1      parameter to the message.
+     * @param p2      parameter to the message.
+     * @param p3      parameter to the message.
+     * @param p4      parameter to the message.
+     * @param p5      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
         if (isValid()) {
@@ -190,6 +305,18 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     * @param p1      parameter to the message.
+     * @param p2      parameter to the message.
+     * @param p3      parameter to the message.
+     * @param p4      parameter to the message.
+     * @param p5      parameter to the message.
+     * @param p6      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
         if (isValid()) {
@@ -197,6 +324,19 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     * @param p1      parameter to the message.
+     * @param p2      parameter to the message.
+     * @param p3      parameter to the message.
+     * @param p4      parameter to the message.
+     * @param p5      parameter to the message.
+     * @param p6      parameter to the message.
+     * @param p7      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6,
                     Object p7) {
@@ -205,6 +345,20 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     * @param p1      parameter to the message.
+     * @param p2      parameter to the message.
+     * @param p3      parameter to the message.
+     * @param p4      parameter to the message.
+     * @param p5      parameter to the message.
+     * @param p6      parameter to the message.
+     * @param p7      parameter to the message.
+     * @param p8      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6,
                     Object p7, Object p8) {
@@ -213,6 +367,21 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message the message to log; the format depends on the message factory.
+     * @param p0      parameter to the message.
+     * @param p1      parameter to the message.
+     * @param p2      parameter to the message.
+     * @param p3      parameter to the message.
+     * @param p4      parameter to the message.
+     * @param p5      parameter to the message.
+     * @param p6      parameter to the message.
+     * @param p7      parameter to the message.
+     * @param p8      parameter to the message.
+     * @param p9      parameter to the message.
+     */
     @Override
     public void log(String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6,
                     Object p7, Object p8, Object p9) {
@@ -221,6 +390,9 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void log() {
         if (isValid()) {
@@ -228,6 +400,11 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * Logs the message in {@link #logger}
+     *
+     * @param message the message to log
+     */
     private void logMessage(Message message) {
         try {
             logger.logMessage(level, marker, location, message, throwable);
@@ -236,11 +413,16 @@ public class LogBuilderImpl implements LogBuilder {
         }
     }
 
+    /**
+     * If the log is valid
+     *
+     * @return true if the log is valid
+     */
     private boolean isValid() {
         if (!inUse) {
             LOGGER.warn("Attempt to reuse LogBuilder was ignored. {}",
                     StackLocatorUtil.getCallerClass(2));
-            return false ;
+            return false;
         }
         if (this.threadId != Thread.currentThread().getId()) {
             LOGGER.warn("LogBuilder can only be used on the owning thread. {}",

@@ -32,7 +32,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class EscapingLocale {
 
+    /**
+     * The text that replaces new lines
+     */
     private String newLineReplacement;
+    /**
+     * The text that replaces apostrophes
+     */
     private String apostropheReplacement;
 
 }

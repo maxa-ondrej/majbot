@@ -219,13 +219,14 @@ import java.util.Map;
 
 /**
  * <p><b>Class {@link cz.majksa.majbot.listeners.Listeners}</b></p>
+ * The listeners application
  *
  * @author majksa
  * @version 1.0.0
  * @since 1.0.0
  */
 @RequiredArgsConstructor
-public class Listeners  extends ListenerAdapter {
+public class Listeners extends ListenerAdapter {
 
     /**
      * The entry points are registered here.
@@ -234,36 +235,67 @@ public class Listeners  extends ListenerAdapter {
      */
     @Getter
     private final Map<Class<? extends GenericEvent>, EntryPointList<? extends GenericEvent>> entryPointsMap = new HashMap<>();
+    /**
+     * @see net.dv8tion.jda.api.JDA
+     */
     private final @NonNull JDA jda;
+    /**
+     * @see cz.majksa.majbot.MajBot
+     */
     private final @NonNull MajBot majBot;
+    /**
+     * @see cz.majksa.majbot.logging.Logger
+     */
     private final @NonNull Logger logger;
-
+    /**
+     * If Listeners are listening for discord events
+     */
     private boolean running = false;
 
+    /**
+     * The constructor
+     *
+     * @param jda {@link #jda}
+     */
     public Listeners(@NonNull JDA jda) {
         this.jda = jda;
         majBot = MajBot.get(jda);
         logger = majBot.getLogger();
     }
 
+    /**
+     * Stars the listeners
+     */
     public void start() {
         logger.atDebug().log("Trying to start discord listeners");
-        if (!running) {
-            logger.atInfo().log("Starting discord listeners");
+        if (running) {
+            logger.atWarn().log("Listeners have already been started");
+        } else {
             jda.addEventListener(this);
             running = true;
         }
     }
 
+    /**
+     * Stops the listeners
+     */
     public void shutdown() {
         logger.atDebug().log("Trying to stop discord listeners");
         if (running) {
-            logger.atInfo().log("Stopping discord listeners");
             jda.removeEventListener(this);
             running = false;
+        } else {
+            logger.atWarn().log("Listeners have not been started yet");
         }
     }
 
+    /**
+     * Loads a listener class and converts it into an {@link cz.majksa.majbot.listeners.EntryPoint}
+     *
+     * @param listener the listener to be loaded
+     * @param <T>      the event type the listener listens to
+     * @return the created {@link cz.majksa.majbot.listeners.EntryPoint}
+     */
     @SuppressWarnings("unchecked")
     public <T extends GenericEvent> @NonNull EntryPoint<T> loadListener(@NonNull IListener<T> listener) {
         final Class<T> eventClass = (Class<T>) listener.getAnnotation().value();
@@ -276,7 +308,7 @@ public class Listeners  extends ListenerAdapter {
      * Find the corresponding {@link cz.majksa.majbot.listeners.EntryPointList} by the given class with generics.
      *
      * @param clazz the class of the event type
-     * @param <T> the type of the event
+     * @param <T>   the type of the event
      * @return the {@link cz.majksa.majbot.listeners.EntryPointList} corresponding to the given class
      */
     @SuppressWarnings("unchecked")
@@ -285,31 +317,61 @@ public class Listeners  extends ListenerAdapter {
         return (EntryPointList<T>) entryPointsMap.get(clazz);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericEvent(@NotNull GenericEvent event) {
         get(GenericEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericUpdate(@NotNull UpdateEvent<?, ?> event) {
         get(UpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onRawGateway(@NotNull RawGatewayEvent event) {
         get(RawGatewayEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGatewayPing(@NotNull GatewayPingEvent event) {
         get(GatewayPingEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         get(ReadyEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onDisconnect(@NotNull DisconnectEvent event) {
         get(DisconnectEvent.class).run(event);
@@ -320,901 +382,1801 @@ public class Listeners  extends ListenerAdapter {
         get(ShutdownEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onStatusChange(@NotNull StatusChangeEvent event) {
         get(StatusChangeEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onException(@NotNull ExceptionEvent event) {
         get(ExceptionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserUpdateName(@NotNull UserUpdateNameEvent event) {
         get(UserUpdateNameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserUpdateDiscriminator(@NotNull UserUpdateDiscriminatorEvent event) {
         get(UserUpdateDiscriminatorEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserUpdateAvatar(@NotNull UserUpdateAvatarEvent event) {
         get(UserUpdateAvatarEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserUpdateOnlineStatus(@NotNull UserUpdateOnlineStatusEvent event) {
         get(UserUpdateOnlineStatusEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserUpdateActivityOrder(@NotNull UserUpdateActivityOrderEvent event) {
         get(UserUpdateActivityOrderEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserUpdateFlags(@NotNull UserUpdateFlagsEvent event) {
         get(UserUpdateFlagsEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserTyping(@NotNull UserTypingEvent event) {
         get(UserTypingEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserActivityStart(@NotNull UserActivityStartEvent event) {
         get(UserActivityStartEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserActivityEnd(@NotNull UserActivityEndEvent event) {
         get(UserActivityEndEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onSelfUpdateAvatar(@NotNull SelfUpdateAvatarEvent event) {
         get(SelfUpdateAvatarEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onSelfUpdateMFA(@NotNull SelfUpdateMFAEvent event) {
         get(SelfUpdateMFAEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onSelfUpdateName(@NotNull SelfUpdateNameEvent event) {
         get(SelfUpdateNameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onSelfUpdateVerified(@NotNull SelfUpdateVerifiedEvent event) {
         get(SelfUpdateVerifiedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         get(GuildMessageReceivedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMessageUpdate(@NotNull GuildMessageUpdateEvent event) {
         get(GuildMessageUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMessageDelete(@NotNull GuildMessageDeleteEvent event) {
         get(GuildMessageDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMessageEmbed(@NotNull GuildMessageEmbedEvent event) {
         get(GuildMessageEmbedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMessageReactionAdd(@NotNull GuildMessageReactionAddEvent event) {
         get(GuildMessageReactionAddEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMessageReactionRemove(@NotNull GuildMessageReactionRemoveEvent event) {
         get(GuildMessageReactionRemoveEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMessageReactionRemoveAll(@NotNull GuildMessageReactionRemoveAllEvent event) {
         get(GuildMessageReactionRemoveAllEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMessageReactionRemoveEmote(@NotNull GuildMessageReactionRemoveEmoteEvent event) {
         get(GuildMessageReactionRemoveEmoteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event) {
         get(PrivateMessageReceivedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onPrivateMessageUpdate(@NotNull PrivateMessageUpdateEvent event) {
         get(PrivateMessageUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onPrivateMessageDelete(@NotNull PrivateMessageDeleteEvent event) {
         get(PrivateMessageDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onPrivateMessageEmbed(@NotNull PrivateMessageEmbedEvent event) {
         get(PrivateMessageEmbedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onPrivateMessageReactionAdd(@NotNull PrivateMessageReactionAddEvent event) {
         get(PrivateMessageReactionAddEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onPrivateMessageReactionRemove(@NotNull PrivateMessageReactionRemoveEvent event) {
         get(PrivateMessageReactionRemoveEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         get(MessageReceivedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onMessageUpdate(@NotNull MessageUpdateEvent event) {
         get(MessageUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onMessageDelete(@NotNull MessageDeleteEvent event) {
         get(MessageDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onMessageBulkDelete(@NotNull MessageBulkDeleteEvent event) {
         get(MessageBulkDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onMessageEmbed(@NotNull MessageEmbedEvent event) {
         get(MessageEmbedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
         get(MessageReactionAddEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
         get(MessageReactionRemoveEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onMessageReactionRemoveAll(@NotNull MessageReactionRemoveAllEvent event) {
         get(MessageReactionRemoveAllEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onMessageReactionRemoveEmote(@NotNull MessageReactionRemoveEmoteEvent event) {
         get(MessageReactionRemoveEmoteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onPermissionOverrideDelete(@NotNull PermissionOverrideDeleteEvent event) {
         get(PermissionOverrideDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onPermissionOverrideUpdate(@NotNull PermissionOverrideUpdateEvent event) {
         get(PermissionOverrideUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onPermissionOverrideCreate(@NotNull PermissionOverrideCreateEvent event) {
         get(PermissionOverrideCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onStoreChannelDelete(@NotNull StoreChannelDeleteEvent event) {
         get(StoreChannelDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onStoreChannelUpdateName(@NotNull StoreChannelUpdateNameEvent event) {
         get(StoreChannelUpdateNameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onStoreChannelUpdatePosition(@NotNull StoreChannelUpdatePositionEvent event) {
         get(StoreChannelUpdatePositionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onStoreChannelCreate(@NotNull StoreChannelCreateEvent event) {
         get(StoreChannelCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onTextChannelDelete(@NotNull TextChannelDeleteEvent event) {
         get(TextChannelDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onTextChannelUpdateName(@NotNull TextChannelUpdateNameEvent event) {
         get(TextChannelUpdateNameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onTextChannelUpdateTopic(@NotNull TextChannelUpdateTopicEvent event) {
         get(TextChannelUpdateTopicEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onTextChannelUpdatePosition(@NotNull TextChannelUpdatePositionEvent event) {
         get(TextChannelUpdatePositionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onTextChannelUpdateNSFW(@NotNull TextChannelUpdateNSFWEvent event) {
         get(TextChannelUpdateNSFWEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onTextChannelUpdateParent(@NotNull TextChannelUpdateParentEvent event) {
         get(TextChannelUpdateParentEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onTextChannelUpdateSlowmode(@NotNull TextChannelUpdateSlowmodeEvent event) {
         get(TextChannelUpdateSlowmodeEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onTextChannelUpdateNews(@NotNull TextChannelUpdateNewsEvent event) {
         get(TextChannelUpdateNewsEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onTextChannelCreate(@NotNull TextChannelCreateEvent event) {
         get(TextChannelCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onVoiceChannelDelete(@NotNull VoiceChannelDeleteEvent event) {
         get(VoiceChannelDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onVoiceChannelUpdateName(@NotNull VoiceChannelUpdateNameEvent event) {
         get(VoiceChannelUpdateNameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onVoiceChannelUpdatePosition(@NotNull VoiceChannelUpdatePositionEvent event) {
         get(VoiceChannelUpdatePositionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onVoiceChannelUpdateUserLimit(@NotNull VoiceChannelUpdateUserLimitEvent event) {
         get(VoiceChannelUpdateUserLimitEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onVoiceChannelUpdateBitrate(@NotNull VoiceChannelUpdateBitrateEvent event) {
         get(VoiceChannelUpdateBitrateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onVoiceChannelUpdateParent(@NotNull VoiceChannelUpdateParentEvent event) {
         get(VoiceChannelUpdateParentEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onVoiceChannelCreate(@NotNull VoiceChannelCreateEvent event) {
         get(VoiceChannelCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onCategoryDelete(@NotNull CategoryDeleteEvent event) {
         get(CategoryDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onCategoryUpdateName(@NotNull CategoryUpdateNameEvent event) {
         get(CategoryUpdateNameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onCategoryUpdatePosition(@NotNull CategoryUpdatePositionEvent event) {
         get(CategoryUpdatePositionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onCategoryCreate(@NotNull CategoryCreateEvent event) {
         get(CategoryCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
         get(GuildReadyEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         get(GuildJoinEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildLeave(@NotNull GuildLeaveEvent event) {
         get(GuildLeaveEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildAvailable(@NotNull GuildAvailableEvent event) {
         get(GuildAvailableEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUnavailable(@NotNull GuildUnavailableEvent event) {
         get(GuildUnavailableEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUnavailableGuildJoined(@NotNull UnavailableGuildJoinedEvent event) {
         get(UnavailableGuildJoinedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUnavailableGuildLeave(@NotNull UnavailableGuildLeaveEvent event) {
         get(UnavailableGuildLeaveEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildBan(@NotNull GuildBanEvent event) {
         get(GuildBanEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUnban(@NotNull GuildUnbanEvent event) {
         get(GuildUnbanEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
         get(GuildMemberRemoveEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateAfkChannel(@NotNull GuildUpdateAfkChannelEvent event) {
         get(GuildUpdateAfkChannelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateSystemChannel(@NotNull GuildUpdateSystemChannelEvent event) {
         get(GuildUpdateSystemChannelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateAfkTimeout(@NotNull GuildUpdateAfkTimeoutEvent event) {
         get(GuildUpdateAfkTimeoutEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateExplicitContentLevel(@NotNull GuildUpdateExplicitContentLevelEvent event) {
         get(GuildUpdateExplicitContentLevelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateIcon(@NotNull GuildUpdateIconEvent event) {
         get(GuildUpdateIconEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateMFALevel(@NotNull GuildUpdateMFALevelEvent event) {
         get(GuildUpdateMFALevelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateName(@NotNull GuildUpdateNameEvent event) {
         get(GuildUpdateNameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateNotificationLevel(@NotNull GuildUpdateNotificationLevelEvent event) {
         get(GuildUpdateNotificationLevelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateOwner(@NotNull GuildUpdateOwnerEvent event) {
         get(GuildUpdateOwnerEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateSplash(@NotNull GuildUpdateSplashEvent event) {
         get(GuildUpdateSplashEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateVerificationLevel(@NotNull GuildUpdateVerificationLevelEvent event) {
         get(GuildUpdateVerificationLevelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateLocale(@NotNull GuildUpdateLocaleEvent event) {
         get(GuildUpdateLocaleEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateFeatures(@NotNull GuildUpdateFeaturesEvent event) {
         get(GuildUpdateFeaturesEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateVanityCode(@NotNull GuildUpdateVanityCodeEvent event) {
         get(GuildUpdateVanityCodeEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateBanner(@NotNull GuildUpdateBannerEvent event) {
         get(GuildUpdateBannerEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateDescription(@NotNull GuildUpdateDescriptionEvent event) {
         get(GuildUpdateDescriptionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateBoostTier(@NotNull GuildUpdateBoostTierEvent event) {
         get(GuildUpdateBoostTierEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateBoostCount(@NotNull GuildUpdateBoostCountEvent event) {
         get(GuildUpdateBoostCountEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateMaxMembers(@NotNull GuildUpdateMaxMembersEvent event) {
         get(GuildUpdateMaxMembersEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateMaxPresences(@NotNull GuildUpdateMaxPresencesEvent event) {
         get(GuildUpdateMaxPresencesEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildInviteCreate(@NotNull GuildInviteCreateEvent event) {
         get(GuildInviteCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildInviteDelete(@NotNull GuildInviteDeleteEvent event) {
         get(GuildInviteDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
         get(GuildMemberJoinEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMemberRoleAdd(@NotNull GuildMemberRoleAddEvent event) {
         get(GuildMemberRoleAddEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMemberRoleRemove(@NotNull GuildMemberRoleRemoveEvent event) {
         get(GuildMemberRoleRemoveEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMemberUpdate(@NotNull GuildMemberUpdateEvent event) {
         get(GuildMemberUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMemberUpdateNickname(@NotNull GuildMemberUpdateNicknameEvent event) {
         get(GuildMemberUpdateNicknameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMemberUpdateBoostTime(@NotNull GuildMemberUpdateBoostTimeEvent event) {
         get(GuildMemberUpdateBoostTimeEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
         get(GuildVoiceUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
         get(GuildVoiceJoinEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
         get(GuildVoiceMoveEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
         get(GuildVoiceLeaveEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceMute(@NotNull GuildVoiceMuteEvent event) {
         get(GuildVoiceMuteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceDeafen(@NotNull GuildVoiceDeafenEvent event) {
         get(GuildVoiceDeafenEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceGuildMute(@NotNull GuildVoiceGuildMuteEvent event) {
         get(GuildVoiceGuildMuteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceGuildDeafen(@NotNull GuildVoiceGuildDeafenEvent event) {
         get(GuildVoiceGuildDeafenEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceSelfMute(@NotNull GuildVoiceSelfMuteEvent event) {
         get(GuildVoiceSelfMuteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceSelfDeafen(@NotNull GuildVoiceSelfDeafenEvent event) {
         get(GuildVoiceSelfDeafenEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceSuppress(@NotNull GuildVoiceSuppressEvent event) {
         get(GuildVoiceSuppressEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceStream(@NotNull GuildVoiceStreamEvent event) {
         get(GuildVoiceStreamEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onRoleCreate(@NotNull RoleCreateEvent event) {
         get(RoleCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onRoleDelete(@NotNull RoleDeleteEvent event) {
         get(RoleDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onRoleUpdateColor(@NotNull RoleUpdateColorEvent event) {
         get(RoleUpdateColorEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onRoleUpdateHoisted(@NotNull RoleUpdateHoistedEvent event) {
         get(RoleUpdateHoistedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onRoleUpdateMentionable(@NotNull RoleUpdateMentionableEvent event) {
         get(RoleUpdateMentionableEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onRoleUpdateName(@NotNull RoleUpdateNameEvent event) {
         get(RoleUpdateNameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onRoleUpdatePermissions(@NotNull RoleUpdatePermissionsEvent event) {
         get(RoleUpdatePermissionsEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onRoleUpdatePosition(@NotNull RoleUpdatePositionEvent event) {
         get(RoleUpdatePositionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onEmoteAdded(@NotNull EmoteAddedEvent event) {
         get(EmoteAddedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onEmoteRemoved(@NotNull EmoteRemovedEvent event) {
         get(EmoteRemovedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onEmoteUpdateName(@NotNull EmoteUpdateNameEvent event) {
         get(EmoteUpdateNameEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onEmoteUpdateRoles(@NotNull EmoteUpdateRolesEvent event) {
         get(EmoteUpdateRolesEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onHttpRequest(@NotNull HttpRequestEvent event) {
         get(HttpRequestEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericMessage(@NotNull GenericMessageEvent event) {
         get(GenericMessageEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericMessageReaction(@NotNull GenericMessageReactionEvent event) {
         get(GenericMessageReactionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericGuildMessage(@NotNull GenericGuildMessageEvent event) {
         get(GenericGuildMessageEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericGuildMessageReaction(@NotNull GenericGuildMessageReactionEvent event) {
         get(GenericGuildMessageReactionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericPrivateMessage(@NotNull GenericPrivateMessageEvent event) {
         get(GenericPrivateMessageEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericPrivateMessageReaction(@NotNull GenericPrivateMessageReactionEvent event) {
         get(GenericPrivateMessageReactionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericUser(@NotNull GenericUserEvent event) {
         get(GenericUserEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericUserPresence(@NotNull GenericUserPresenceEvent event) {
         get(GenericUserPresenceEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericSelfUpdate(@NotNull GenericSelfUpdateEvent event) {
         get(GenericSelfUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericStoreChannel(@NotNull GenericStoreChannelEvent event) {
         get(GenericStoreChannelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericStoreChannelUpdate(@NotNull GenericStoreChannelUpdateEvent event) {
         get(GenericStoreChannelUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericTextChannel(@NotNull GenericTextChannelEvent event) {
         get(GenericTextChannelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericTextChannelUpdate(@NotNull GenericTextChannelUpdateEvent event) {
         get(GenericTextChannelUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericVoiceChannel(@NotNull GenericVoiceChannelEvent event) {
         get(GenericVoiceChannelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericVoiceChannelUpdate(@NotNull GenericVoiceChannelUpdateEvent event) {
         get(GenericVoiceChannelUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericCategory(@NotNull GenericCategoryEvent event) {
         get(GenericCategoryEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericCategoryUpdate(@NotNull GenericCategoryUpdateEvent event) {
         get(GenericCategoryUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericGuildUpdate(@NotNull GenericGuildUpdateEvent event) {
         get(GenericGuildUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericGuildInvite(@NotNull GenericGuildInviteEvent event) {
         get(GenericGuildInviteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericGuildMember(@NotNull GenericGuildMemberEvent event) {
         get(GenericGuildMemberEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericGuildMemberUpdate(@NotNull GenericGuildMemberUpdateEvent event) {
         get(GenericGuildMemberUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericGuildVoice(@NotNull GenericGuildVoiceEvent event) {
         get(GenericGuildVoiceEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericRole(@NotNull GenericRoleEvent event) {
         get(GenericRoleEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericRoleUpdate(@NotNull GenericRoleUpdateEvent event) {
         get(GenericRoleUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericEmote(@NotNull GenericEmoteEvent event) {
         get(GenericEmoteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericEmoteUpdate(@NotNull GenericEmoteUpdateEvent event) {
         get(GenericEmoteUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericPermissionOverride(@NotNull GenericPermissionOverrideEvent event) {
         get(GenericPermissionOverrideEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onResumed(@NotNull ResumedEvent event) {
         get(ResumedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onReconnected(@NotNull ReconnectedEvent event) {
         get(ReconnectedEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
         get(SlashCommandEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onButtonClick(@NotNull ButtonClickEvent event) {
         get(ButtonClickEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onSelectionMenu(@NotNull SelectionMenuEvent event) {
         get(SelectionMenuEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onApplicationCommandUpdate(@NotNull ApplicationCommandUpdateEvent event) {
         get(ApplicationCommandUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onApplicationCommandDelete(@NotNull ApplicationCommandDeleteEvent event) {
         get(ApplicationCommandDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onApplicationCommandCreate(@NotNull ApplicationCommandCreateEvent event) {
         get(ApplicationCommandCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onUserUpdateActivities(@NotNull UserUpdateActivitiesEvent event) {
         get(UserUpdateActivitiesEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onVoiceChannelUpdateRegion(@NotNull VoiceChannelUpdateRegionEvent event) {
         get(VoiceChannelUpdateRegionEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onStageInstanceDelete(@NotNull StageInstanceDeleteEvent event) {
         get(StageInstanceDeleteEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onStageInstanceUpdateTopic(@NotNull StageInstanceUpdateTopicEvent event) {
         get(StageInstanceUpdateTopicEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onStageInstanceUpdatePrivacyLevel(@NotNull StageInstanceUpdatePrivacyLevelEvent event) {
         get(StageInstanceUpdatePrivacyLevelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onStageInstanceCreate(@NotNull StageInstanceCreateEvent event) {
         get(StageInstanceCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildTimeout(@NotNull GuildTimeoutEvent event) {
         get(GuildTimeoutEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateRulesChannel(@NotNull GuildUpdateRulesChannelEvent event) {
         get(GuildUpdateRulesChannelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildUpdateCommunityUpdatesChannel(@NotNull GuildUpdateCommunityUpdatesChannelEvent event) {
         get(GuildUpdateCommunityUpdatesChannelEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildMemberUpdatePending(@NotNull GuildMemberUpdatePendingEvent event) {
         get(GuildMemberUpdatePendingEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGuildVoiceRequestToSpeak(@NotNull GuildVoiceRequestToSpeakEvent event) {
         get(GuildVoiceRequestToSpeakEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericApplicationCommand(@NotNull GenericApplicationCommandEvent event) {
         get(GenericApplicationCommandEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericInteractionCreate(@NotNull GenericInteractionCreateEvent event) {
         get(GenericInteractionCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericComponentInteractionCreate(@NotNull GenericComponentInteractionCreateEvent event) {
         get(GenericComponentInteractionCreateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericStageInstance(@NotNull GenericStageInstanceEvent event) {
         get(GenericStageInstanceEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericStageInstanceUpdate(@NotNull GenericStageInstanceUpdateEvent event) {
         get(GenericStageInstanceUpdateEvent.class).run(event);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param event the event object
+     */
     @Override
     public void onGenericGuild(@NotNull GenericGuildEvent event) {
         get(GenericGuildEvent.class).run(event);
