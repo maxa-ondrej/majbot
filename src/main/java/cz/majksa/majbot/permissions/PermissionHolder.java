@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,7 +43,7 @@ public class PermissionHolder implements ISnowflake, Serializable {
 
     private static final long serialVersionUID = -8461702559356460582L;
 
-    private Type type;
+    private CommandPrivilege.Type type;
     private long idLong;
 
     /**
@@ -52,7 +53,7 @@ public class PermissionHolder implements ISnowflake, Serializable {
      * @throws java.io.IOException if an error occurs
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
-        stream.writeInt(type.id);
+        stream.writeObject(type);
         stream.writeLong(idLong);
     }
 
@@ -64,28 +65,8 @@ public class PermissionHolder implements ISnowflake, Serializable {
      * @throws ClassNotFoundException if the classes do not match
      */
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
-        type = Type.findById(stream.readInt());
+        type = (CommandPrivilege.Type) stream.readObject();
         idLong = stream.readLong();
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    enum Type {
-        ROLE(1),
-        USER(2);
-
-        private final int id;
-
-        public static @NonNull Type findById(int id) {
-            switch (id) {
-                case 1:
-                    return ROLE;
-                case 2:
-                    return USER;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
     }
 
 }

@@ -21,6 +21,7 @@ package cz.majksa.majbot.permissions;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,8 +39,8 @@ class PermissionsTest {
 
     @Test
     void shouldBeAllowed() {
-        final PermissionHolder holder = new PermissionHolder(PermissionHolder.Type.USER, 1000000000000L);
-        final PermissionHolder holder2 = new PermissionHolder(PermissionHolder.Type.ROLE, 1000000000000L);
+        final PermissionHolder holder = new PermissionHolder(CommandPrivilege.Type.USER, 1000000000000L);
+        final PermissionHolder holder2 = new PermissionHolder(CommandPrivilege.Type.ROLE, 1000000000000L);
         permissions.allow("command.test", holder);
         assertTrue(permissions.getAllowed("command.test").contains(holder));
         assertFalse(permissions.getAllowed("command.test").contains(holder2));
@@ -48,7 +49,7 @@ class PermissionsTest {
     @Test
     void listeners() {
         final MyListener listener = new MyListener("command.test");
-        final PermissionHolder holder = new PermissionHolder(PermissionHolder.Type.USER, 1000000000000L);
+        final PermissionHolder holder = new PermissionHolder(CommandPrivilege.Type.USER, 1000000000000L);
         permissions.allow("command.test", holder);
         assertFalse(listener.isChanged());
         permissions.registerListener(listener);
