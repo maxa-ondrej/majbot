@@ -19,6 +19,7 @@
 package cz.majksa.majbot.core;
 
 import cz.majksa.majbot.listeners.EntryPoint;
+import cz.majksa.majbot.permissions.Permissions;
 import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
@@ -42,6 +43,22 @@ public interface Server {
      */
     @NonNull Guild getGuild();
 
+    /**
+     * The permissions object
+     *
+     * @return the {@link cz.majksa.majbot.permissions.Permissions} object
+     */
+    @NonNull Permissions getPermissions();
+
+    /**
+     * Adds a listener to the guild
+     *
+     * @param clazz     the event type class, has to extend {@link net.dv8tion.jda.api.events.guild.GenericGuildEvent}
+     * @param callback  the function called on event
+     * @param predicate the condition whether the callback should be executed
+     * @param <T>       the event type, has to extend {@link net.dv8tion.jda.api.events.guild.GenericGuildEvent}
+     * @return the generated {@link cz.majksa.majbot.listeners.EntryPoint}
+     */
     @NonNull <T extends GenericGuildEvent> EntryPoint<T> listen(@NonNull Class<T> clazz, @NonNull Consumer<T> callback, @NonNull Predicate<T> predicate);
 
 }

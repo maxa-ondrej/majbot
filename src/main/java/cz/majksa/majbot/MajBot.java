@@ -22,11 +22,13 @@ import cz.majksa.majbot.core.Server;
 import cz.majksa.majbot.core.ServerImpl;
 import cz.majksa.majbot.listeners.Listeners;
 import cz.majksa.majbot.logging.Logger;
+import cz.majksa.majbot.permissions.Permissions;
 import lombok.Getter;
 import lombok.NonNull;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +41,7 @@ import java.util.Map;
  * @since 1.0.0
  */
 
+@Getter
 public final class MajBot {
 
     public static final String VERSION = "1.0.0";
@@ -46,23 +49,39 @@ public final class MajBot {
 
     private static final Map<JDA, MajBot> bots = new HashMap<>();
 
-    @Getter
-    private final Logger logger = new Logger(LogManager.getLogger());
-    private final Map<Guild, Server> servers = new HashMap<>();
-    private final JDA api;
-    @Getter
-    private final Listeners listeners;
+    private final @NonNull Logger logger = new Logger(LogManager.getLogger());
+    private final @NonNull Map<Guild, Server> servers = new HashMap<>();
+    private final @NonNull JDA api;
+    private final @NonNull Listeners listeners;
+    /**
+     * The global {@link cz.majksa.majbot.permissions.Permissions}
+     */
+    private final @NonNull Permissions permissions = new Permissions();
 
-    private MajBot(JDA api) {
+    /**
+     * The constructor
+     *
+     * @param api {@link #api}
+     */
+    private MajBot(@NonNull JDA api) {
         this.api = api;
         listeners = new Listeners(api);
     }
 
+    /**
+     * Gets or creates a new bot application
+     *
+     * @param jda the JDA api
+     * @return the bot application
+     */
     public static @NonNull MajBot get(@NonNull JDA jda) {
         bots.computeIfAbsent(jda, MajBot::new);
         return bots.get(jda);
     }
 
+    /**
+     * Starts the bot application
+     */
     public void start() {
         try {
             api.awaitReady();
@@ -72,11 +91,20 @@ public final class MajBot {
         listeners.start();
     }
 
+    /**
+     * Stops the bot application
+     */
     public void shutdown() {
         listeners.shutdown();
         bots.remove(api);
     }
 
+    /**
+     * Gets the server of a bot application
+     *
+     * @param guild the discord server representation
+     * @return the server
+     */
     public Server getServer(@NonNull Guild guild) {
         if (!servers.containsKey(guild)) {
             servers.put(guild, new ServerImpl(this, guild));

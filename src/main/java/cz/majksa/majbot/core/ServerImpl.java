@@ -21,6 +21,7 @@ package cz.majksa.majbot.core;
 import cz.majksa.majbot.MajBot;
 import cz.majksa.majbot.listeners.EntryPoint;
 import cz.majksa.majbot.listeners.Listeners;
+import cz.majksa.majbot.permissions.Permissions;
 import lombok.Getter;
 import lombok.NonNull;
 import net.dv8tion.jda.api.entities.Guild;
@@ -47,6 +48,10 @@ public class ServerImpl implements Server {
      * The {@link cz.majksa.majbot.listeners.Listeners}
      */
     private final @NonNull Listeners listeners;
+    /**
+     * The {@link cz.majksa.majbot.permissions.Permissions}
+     */
+    private final @NonNull Permissions permissions = new Permissions();
 
     /**
      * The constructor

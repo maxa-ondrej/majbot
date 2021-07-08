@@ -50,40 +50,26 @@ public class Logger {
 
     @Getter(AccessLevel.MODULE)
     private final org.apache.logging.log4j.Logger logger;
-    private final Map<Level, List<Consumer<LogEvent>>> listeners = new HashMap<>();
+    @Getter
+    private final List<LogListener> listeners = new ArrayList<>();
     private final Collection<ErrorsSaver> errorsSavers = new HashSet<>();
 
     /**
      * Adds a listener
      *
-     * @param level    the level to listen on
-     * @param consumer the listener
+     * @param listener the listener
      */
-    public void listen(Level level, Consumer<LogEvent> consumer) {
-        getListeners(level).add(consumer);
+    public void registerListener(@NonNull LogListener listener) {
+        listeners.add(listener);
     }
 
     /**
      * Removes a listener
      *
-     * @param level    the level to listen on
-     * @param consumer the listener
+     * @param listener the listener
      */
-    public void remove(Level level, Consumer<LogEvent> consumer) {
-        getListeners(level).remove(consumer);
-    }
-
-    /**
-     * Gets all listeners on one level
-     *
-     * @param level the level to get listeners on
-     * @return the list
-     */
-    public List<Consumer<LogEvent>> getListeners(Level level) {
-        if (!listeners.containsKey(level)) {
-            listeners.put(level, new ArrayList<>());
-        }
-        return listeners.get(level);
+    public void removeListener(@NonNull LogListener listener) {
+        listeners.remove(listener);
     }
 
     /**
@@ -187,19 +173,11 @@ public class Logger {
      * @param throwable the {@code Throwable} to log, including its stack trace.
      */
     void logMessage(Level level, Marker marker, StackTraceElement location, Message message, Throwable throwable) {
-        final LogEvent event = Log4jLogEvent.newBuilder()
-                .setMessage(message)
-                .setMarker(marker)
-                .setLevel(level)
-                .setLoggerName(logger.getName())
-                .setLoggerFqcn(LogBuilderImpl.FQCN)
-                .setThrown(throwable)
-                .build();
+        logger.logMessage(level, marker, LogBuilderImpl.FQCN, location, message, throwable);
         if (throwable != null) {
             errorsSavers.forEach(errorsSaver -> errorsSaver.save(throwable));
         }
-        getListeners(level).forEach(logEventConsumer -> logEventConsumer.accept(event));
-        logger.logMessage(level, marker, LogBuilderImpl.FQCN, location, message, throwable);
+        listeners.forEach(listener -> listener.onEvent(level, marker, location, message, throwable));
     }
 
 }
