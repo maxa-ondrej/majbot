@@ -1,5 +1,5 @@
 /*
- *  majbot - cz.majksa.majbot.DiscordUtils
+ *  majbot - cz.majksa.majbot.utils.DiscordUtils
  *  Copyright (C) 2021  Majksa
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package cz.majksa.majbot;
+package cz.majksa.majbot.utils;
 
 import lombok.NonNull;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -37,7 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <p><b>Class {@link cz.majksa.majbot.DiscordUtils}</b></p>
+ * <p><b>Class {@link DiscordUtils}</b></p>
  *
  * @author majksa
  * @version 1.0.0
@@ -314,7 +314,18 @@ public class DiscordUtils {
      * @return the formatted text
      */
     public static @NonNull String codeblock(@NonNull String subject) {
-        return "```" + subject + "```";
+        return codeblock(subject, "");
+    }
+
+    /**
+     * Makes text a codeblock
+     *
+     * @param subject the text to format
+     * @param language the language of the text inside the codeblock
+     * @return the formatted text
+     */
+    public static @NonNull String codeblock(@NonNull String subject, @NonNull String language) {
+        return String.format("```%s\n%s\n```", language, subject);
     }
 
     /**

@@ -41,8 +41,8 @@ import org.apache.logging.log4j.util.Supplier;
 @Getter
 public class LogBuilderImpl implements LogBuilder {
 
+    static final String FQCN = DefaultLogBuilder.class.getName();
     private static final Message EMPTY_MESSAGE = new SimpleMessage("");
-    private static final String FQCN = DefaultLogBuilder.class.getName();
     private static final Logger LOGGER = StatusLogger.getLogger();
 
     private final cz.majksa.majbot.logging.Logger logger;
@@ -230,7 +230,7 @@ public class LogBuilderImpl implements LogBuilder {
 
     private void logMessage(Message message) {
         try {
-            logger.logMessage(level, marker, FQCN, location, message, throwable);
+            logger.logMessage(level, marker, location, message, throwable);
         } finally {
             inUse = false;
         }

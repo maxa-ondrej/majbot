@@ -1,5 +1,5 @@
 /*
- *  majbot - cz.majksa.majbot.exceptions.AlreadyActivatedException
+ *  majbot - cz.majksa.majbot.utils.EscapingLocale
  *  Copyright (C) 2021  Majksa
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package cz.majksa.majbot.exceptions;
+package cz.majksa.majbot.utils;
 
-import java.io.Serial;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
- * <p><b>Class {@link cz.majksa.majbot.exceptions.NotActivatedException}</b></p>
+ * <p><b>Class {@link EscapingLocale}</b></p>
  *
  * @author majksa
  * @version 1.0.0
  * @since 1.0.0
  */
-public class NotActivatedException extends IllegalStateException {
+@Data
+@AllArgsConstructor
+public class EscapingLocale {
 
-    @Serial
-    private static final long serialVersionUID = 4908383142811040623L;
+    private String newLineReplacement;
+    private String apostropheReplacement;
 
 }

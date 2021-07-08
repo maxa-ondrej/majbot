@@ -18,8 +18,10 @@
 
 package cz.majksa.majbot.logging;
 
+import cz.majksa.majbot.logging.errors.ErrorsSaver;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogBuilder;
@@ -29,7 +31,9 @@ import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.Message;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -47,6 +51,7 @@ public class Logger {
     @Getter(AccessLevel.MODULE)
     private final org.apache.logging.log4j.Logger logger;
     private final Map<Level, List<Consumer<LogEvent>>> listeners = new HashMap<>();
+    private final Collection<ErrorsSaver> errorsSavers = new HashSet<>();
 
     public void listen(Level level, Consumer<LogEvent> consumer) {
         getListeners(level).add(consumer);
@@ -61,6 +66,15 @@ public class Logger {
             listeners.put(level, new ArrayList<>());
         }
         return listeners.get(level);
+    }
+
+    public void addErrorsSaver(@NonNull ErrorsSaver errorsSaver) {
+        errorsSavers.add(errorsSaver);
+        errorsSaver.init();
+    }
+
+    public void removeErrorsSaver(@NonNull ErrorsSaver errorsSaver) {
+        errorsSavers.remove(errorsSaver);
     }
 
     public LogBuilder atDebug() {
@@ -95,17 +109,20 @@ public class Logger {
         return new LogBuilderImpl(this, level);
     }
 
-    public void logMessage(Level level, Marker marker, String fqcn, StackTraceElement location, Message message, Throwable throwable) {
+    void logMessage(Level level, Marker marker, StackTraceElement location, Message message, Throwable throwable) {
         final LogEvent event = Log4jLogEvent.newBuilder()
                 .setMessage(message)
                 .setMarker(marker)
                 .setLevel(level)
                 .setLoggerName(logger.getName())
-                .setLoggerFqcn(fqcn)
+                .setLoggerFqcn(LogBuilderImpl.FQCN)
                 .setThrown(throwable)
                 .build();
+        if (throwable != null) {
+            errorsSavers.forEach(errorsSaver -> errorsSaver.save(throwable));
+        }
         getListeners(level).forEach(logEventConsumer -> logEventConsumer.accept(event));
-        logger.logMessage(level, marker, fqcn, location, message, throwable);
+        logger.logMessage(level, marker, LogBuilderImpl.FQCN, location, message, throwable);
     }
 
 }

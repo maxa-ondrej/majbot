@@ -18,13 +18,8 @@
 
 package cz.majksa.majbot;
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
+import cz.majksa.majbot.utils.DiscordUtils;
 import org.junit.jupiter.api.Test;
-
-import javax.security.auth.login.LoginException;
-
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -94,7 +89,8 @@ class DiscordUtilsTest {
 
     @Test
     void codeblock() {
-        assertEquals("```java\nhallo```", DiscordUtils.codeblock("java\nhallo"));
+        assertEquals("```\nhallo\n```", DiscordUtils.codeblock("hallo"));
+        assertEquals("```java\nhallo\n```", DiscordUtils.codeblock("hallo", "java"));
     }
 
     @Test

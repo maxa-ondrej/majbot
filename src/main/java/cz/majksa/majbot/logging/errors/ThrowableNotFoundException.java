@@ -1,5 +1,5 @@
 /*
- *  majbot - cz.majksa.majbot.exceptions.AlreadyActivatedException
+ *  majbot - cz.majksa.majbot.logging.errors.ThrowableNotFoundException
  *  Copyright (C) 2021  Majksa
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package cz.majksa.majbot.exceptions;
-
-import java.io.Serial;
+package cz.majksa.majbot.logging.errors;
 
 /**
- * <p><b>Class {@link cz.majksa.majbot.exceptions.AlreadyActivatedException}</b></p>
+ * <p><b>Class {@link ThrowableNotFoundException}</b></p>
  *
  * @author majksa
  * @version 1.0.0
  * @since 1.0.0
  */
-public class AlreadyActivatedException extends IllegalStateException {
+public class ThrowableNotFoundException extends IllegalArgumentException {
 
-    @Serial
-    private static final long serialVersionUID = 2031423819697035898L;
+    private static final long serialVersionUID = 3586152127619062714L;
 
 }
